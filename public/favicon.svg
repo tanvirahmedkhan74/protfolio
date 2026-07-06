@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="TAK monogram">
+  <rect width="128" height="128" rx="18" fill="#07111f"/>
+  <path d="M18 92 64 18l46 74H86L64 54 42 92H18Z" fill="#c6a25d"/>
+  <path d="M33 101h62" stroke="#7fb5d6" stroke-width="7" stroke-linecap="round"/>
+  <text x="64" y="116" fill="#eef4f8" font-family="Arial, Helvetica, sans-serif" font-size="19" text-anchor="middle" font-weight="700">TAK</text>
+</svg>

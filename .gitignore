@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.vite/
+tmp/
+.pnpm-store/
+design-review/
+
+*.log
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+.env
+.env.*
+
+.DS_Store
+Thumbs.db
+
+iCloud Photos/
+iCloud Photos_2/
+reference_images/
+*.zip
+humanoid_robot.mp4
+Tanvir_s_Resume_Latest.pdf
+main.tex
+instruction.md
+image_instruction.md
+improvement.md
