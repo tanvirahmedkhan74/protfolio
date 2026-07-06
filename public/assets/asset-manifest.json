@@ -80,6 +80,24 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
+      "source": "iCloud Photos_2/iCloud Photos/IMG_2707.JPG",
+      "asset": "assets/gallery/lab-interface.webp",
+      "size": [
+        1300,
+        900
+      ],
+      "treatment": "cropped, dark-blue color grade, webp compression"
+    },
+    {
+      "source": "iCloud Photos/iCloud Photos/IMG_4831.JPG",
+      "asset": "assets/gallery/saudi-night.webp",
+      "size": [
+        1300,
+        900
+      ],
+      "treatment": "cropped, dark-blue color grade, webp compression"
+    },
+    {
       "source": "generated from public/assets/gallery/memory-sky.webp",
       "asset": "assets/og/og-card.webp",
       "size": [

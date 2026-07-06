@@ -389,6 +389,26 @@ def main() -> None:
             color=0.82,
             overlay=(7, 16, 30, 64),
         ),
+        make_webp(
+            "iCloud Photos_2/iCloud Photos/IMG_2707.JPG",
+            "assets/gallery/lab-interface.webp",
+            (1300, 900),
+            center=(0.5, 0.48),
+            brightness=0.74,
+            contrast=1.2,
+            color=0.82,
+            overlay=(6, 16, 31, 72),
+        ),
+        make_webp(
+            "iCloud Photos/iCloud Photos/IMG_4831.JPG",
+            "assets/gallery/saudi-night.webp",
+            (1300, 900),
+            center=(0.5, 0.5),
+            brightness=0.72,
+            contrast=1.14,
+            color=0.84,
+            overlay=(5, 15, 30, 66),
+        ),
     ]
     generated.append(build_og_card())
     generated.extend(copy_static_assets())
