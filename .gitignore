@@ -4,6 +4,9 @@ dist/
 tmp/
 .pnpm-store/
 design-review/
+source_assets/
+docs/instructions/
+docs/private/
 
 *.log
 *.tsbuildinfo
@@ -20,13 +23,3 @@ iCloud Photos/
 iCloud Photos_2/
 reference_images/
 *.zip
-humanoid_robot.mp4
-renders_stable.mp4
-robert_2.mp4
-Tanvir_s_Resume_Latest.pdf
-main.tex
-instruction.md
-image_instruction.md
-improvement.md
-motion_improvement.md
-research_description.md

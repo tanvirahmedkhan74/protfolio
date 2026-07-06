@@ -1,49 +1,52 @@
 # Motion Redesign Notes
 
-## Instruction Merge
+## Current Correction Pass
 
-- Used `motion_improvement.md` as the base motion brief.
-- Extended it with `research_description.md` to foreground PNEUMA, real-time avatar work, and DINA as a high-level ongoing teaser.
-- Prioritized the current critique by removing the vertical-scroll-to-horizontal-transform section that made page scrolling feel conflicted.
+- Used `docs/instructions/motion_improvement.md` as the base motion brief and `docs/instructions/next_work.md` as the correction pass.
+- The prior research presentation still felt card-led, so this pass makes DINA/GaussianTalker, PNEUMA, and visual memory drive the motion system itself.
+- The old horizontal research rail was removed from the UI because page-level vertical scrolling and rail-level horizontal scrolling competed with each other.
+- The distributed inference console visual was removed from the UI and moved out of `public/assets` because it represented STM3D context, not the portfolio research story.
 
-## Motion Systems Added
+## DINA / GaussianTalker Storyboard
 
-- Massive staggered research statement with highlight wipes and a signature-style SVG stroke.
-- Native horizontal research rail with snap cards, progress, and explicit controls. It no longer hijacks vertical page scroll.
-- PNEUMA triadic memory visualization with SQL, FAISS, and knowledge-graph layers, animated query paths, and result convergence.
-- Video-backed avatar section with waveform bars and chunked streaming pipeline chips.
-- DINA/3DGS teaser section with a masked local render video and restrained mesh overlay.
-- Responsive stacked fallbacks for PNEUMA, videos, and the rail.
-- Existing orbital research visualization, intro curtain, hero layering, progress rail, pointer atmosphere, and reduced-motion CSS remain in place.
+- `render_stable.mp4` is used as the first DINA lab panel: geometry, 3DGS, FLAME-style initialization, and stable facial structure.
+- `v7_14000.mp4` is now copied to `public/assets/video/training-variants-v7.mp4` and used as the primary central comparison panel for GaussianTalker-related training and architecture variants.
+- `robert_2.mp4` is used as the third lab panel: applied real-time talking-avatar behavior, waveform/pipeline flow, and robotic-face output.
+- DINA copy remains high-level and public-safe: ongoing geometry-aware audio-to-face articulation, no private architecture, loss, equation, training protocol, or unreleased implementation claims.
 
-## Research Representation
+## Image Usage
 
-- PNEUMA is presented as a model-agnostic long-term egocentric memory system using SQL, FAISS/vector retrieval, and knowledge graphs.
-- Robotbulls/MILab-style avatar work is framed as applied real-time talking-avatar research without exposing private deployment or partner details.
-- DINA is intentionally high-level only: geometry-aware audio-to-face articulation for stable jaw, lip, and lower-face motion. No training protocol, losses, equations, or unreleased details are disclosed.
+- `IMG_4836` became `saudi-cafe-twilight.webp`, used as a warm atmospheric visual-memory fragment.
+- `IMG_4924` remains `saudi-city.webp`, used for Saudi architecture, mountain geometry, and personal atmosphere.
+- `IMG_2150` became `campus-ideathon.webp`, used in Visual Memory and the Research/Industry signal board for academic context.
+- `IMG_4253` became `road-crossing-memory.webp`, used as a journey/path visual-memory fragment and as the talking-avatar panel poster fallback.
+- Reference/Pinterest/game images remain moodboard-only; none are copied into public assets.
 
-## Video Assets
+## Motion Systems
 
-- `renders_stable.mp4` is copied to `public/assets/video/render-stable.mp4` and used in the DINA/3DGS teaser.
-- `robert_2.mp4` is copied to `public/assets/video/robert-2.mp4` and used in the talking-avatar demo section.
-- Existing `humanoid_robot.mp4` remains copied for local assets but is no longer the primary research video panel.
+- Research Deep Dive is now a sticky, scroll-driven vertical stage. Cards enter the research window diagonally and sequentially through normal wheel/trackpad scrolling, with project clicks only for optional detail layers.
+- Visual Memory now behaves like an episodic memory wall: hover/focus expands one image, neighboring fragments recede, captions resolve, and the wall keeps keyboard focus support.
+- DINA Lab Reel creates a three-video research progression with mesh overlays, variant chips, timeline markers, waveform/pipeline chips, and diagonal hover lift.
+- Experiment Archive adds a dark systems-gallery grid for research artifacts, using staggered media tiles, PNEUMA mini-graph treatment, project signal visuals, and bronze/steel hover traces.
+- Typography highlights, signature strokes, orbital research focus, PNEUMA graph motion, pointer atmosphere, and reduced-motion CSS remain in place.
 
-## Libraries
+## Asset Organization
 
-- No new dependencies were added.
-- Framer Motion, Three.js, and CSS/SVG animation were sufficient for this pass.
-- Avoided Lenis/GSAP because the immediate issue was scroll conflict; adding another scroll abstraction would increase risk without solving the UX problem.
+- Raw videos moved to `source_assets/video/`.
+- Private/source documents moved to `source_assets/documents/`.
+- Archive zips moved to `source_assets/archives/`.
+- Instruction prompts moved to `docs/instructions/`.
+- Served/optimized assets remain under `public/assets/` and are generated by `scripts/build_assets.py`.
 
-## Validation
+## Validation Targets
 
-- `pnpm run build` passes.
-- Build still reports the existing large JavaScript chunk warning from the interactive stack.
-- Browser validation screenshots are saved under `design-review/motion-final/`.
-- Desktop browser QA passed: no console warnings/errors, no actual broken images, both new videos reached ready state `4`, old sticky runway selectors are absent, the horizontal rail has scrollable width, and page-level horizontal overflow is `0`.
-- Mobile QA at `390x844` passed with page-level horizontal overflow `0`.
+- Build locally after asset generation.
+- Verify no references to `lab-interface.webp` remain in `src`.
+- Verify `training-variants-v7.mp4`, `render-stable.mp4`, and `robert-2.mp4` load in the browser.
+- Check desktop and mobile for page-level horizontal overflow, console errors, Visual Memory focus/hover behavior, and the scroll-driven deep-dive fallback.
 
 ## Known Limitations
 
-- The videos are copied without transcoding; `robert-2.mp4` is roughly 19 MB and should be compressed before deployment.
-- The horizontal rail is intentionally user-controlled rather than vertical-scroll-driven to avoid the reported conflict.
-- Reduced-motion mode relies on CSS and existing Framer checks; deeper browser-level reduced-motion validation is still useful.
+- Videos are copied without transcoding because `ffmpeg` is unavailable in the local environment.
+- `robert_2.mp4` and `v7_14000.mp4` are large and should be compressed before deployment.
+- Video poster frames were not extracted because no local video reader is installed; poster fallbacks use optimized local images instead.

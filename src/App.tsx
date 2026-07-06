@@ -27,6 +27,7 @@ import {
   useReducedMotion,
   useScroll,
   useSpring,
+  useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -328,188 +329,291 @@ function PneumaMemoryGraph() {
   );
 }
 
-function ResearchJourneyRail({ onProjectClick }: { onProjectClick: (project: Project) => void }) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const [progress, setProgress] = useState(0);
+type DeepDiveItem = {
+  label: string;
+  title: string;
+  detail: string;
+  tags: string[];
+  project?: Project;
+};
 
-  const updateProgress = () => {
-    const rail = railRef.current;
-    if (!rail) {
-      return;
-    }
-    const max = rail.scrollWidth - rail.clientWidth;
-    setProgress(max <= 0 ? 0 : rail.scrollLeft / max);
-  };
-
-  useEffect(() => {
-    updateProgress();
-    window.addEventListener("resize", updateProgress);
-    return () => window.removeEventListener("resize", updateProgress);
-  }, []);
-
-  const moveRail = (direction: -1 | 1) => {
-    const rail = railRef.current;
-    if (!rail) {
-      return;
-    }
-    rail.scrollBy({
-      left: direction * Math.min(rail.clientWidth * 0.82, 620),
-      behavior: reduceMotion ? "auto" : "smooth",
-    });
-  };
+function ResearchDeepDiveCard({
+  item,
+  index,
+  total,
+  progress,
+  onProjectClick,
+}: {
+  item: DeepDiveItem;
+  index: number;
+  total: number;
+  progress: ReturnType<typeof useSpring>;
+  onProjectClick: (project: Project) => void;
+}) {
+  const center = (index + 1) / (total + 1);
+  const start = Math.max(0, center - 0.2);
+  const end = Math.min(1, center + 0.2);
+  const side = index % 2 === 0 ? -1 : 1;
+  const x = useTransform(progress, [start, center, end], [side * 230, 0, side * -170]);
+  const y = useTransform(progress, [start, center, end], [105, 0, -88]);
+  const opacity = useTransform(progress, [start, center, end], [0, 1, 0.2]);
+  const scale = useTransform(progress, [start, center, end], [0.78, 1, 0.9]);
+  const rotate = useTransform(progress, [start, center, end], [side * -7, 0, side * 4]);
 
   return (
-    <section className="section rail-section" id="projects">
-      <div className="rail-heading">
-        <div>
-          <div className="section-kicker">
-            <Cpu size={18} aria-hidden="true" />
-            Research Trajectory
+    <motion.article
+      className="deep-card"
+      style={{ x, y, opacity, scale, rotate, "--card-index": index } as unknown as CSSProperties}
+      tabIndex={0}
+    >
+      <span className="runway-index">{item.project ? `P${index + 1}` : `R${index + 1}`}</span>
+      <small>{item.label}</small>
+      <h3>{item.title}</h3>
+      <p>{item.detail}</p>
+      <div className="tag-row">
+        {item.tags.map((tag) => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+      {item.project ? (
+        <div className="runway-actions">
+          <a
+            className="icon-link"
+            href={item.project.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open GitHub project: ${item.project.title}`}
+          >
+            <Github size={19} aria-hidden="true" />
+          </a>
+          <button type="button" className="text-link" onClick={() => onProjectClick(item.project as Project)}>
+            Detail layer
+          </button>
+        </div>
+      ) : null}
+    </motion.article>
+  );
+}
+
+function ResearchDeepDive({ onProjectClick }: { onProjectClick: (project: Project) => void }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 92,
+    damping: 24,
+    mass: 0.35,
+  });
+  const windowScale = useTransform(progress, [0, 0.5, 1], [0.94, 1, 0.96]);
+
+  const items: DeepDiveItem[] = [
+    ...researchJourney,
+    ...projects.map((project) => ({
+      label: project.period,
+      title: project.title,
+      detail: project.description,
+      tags: project.tags,
+      project,
+    })),
+  ];
+
+  return (
+    <section className="section deep-dive-section" id="projects" ref={sectionRef}>
+      <div className="deep-stage">
+        <motion.div className="deep-window" style={{ scale: windowScale }}>
+          <div className="deep-heading">
+            <div>
+              <div className="section-kicker">
+                <Cpu size={18} aria-hidden="true" />
+                Research Deep Dive
+              </div>
+              <h2>Perception to memory to speech to 3D embodiment.</h2>
+            </div>
+            <p>
+              Vertical scroll now drives the research map. The cards move through
+              a broad lab window in sequence, so normal mouse-wheel and trackpad
+              scrolling can inspect the work without horizontal scroll conflict.
+            </p>
           </div>
-          <h2>Perception to memory to speech to 3D embodiment.</h2>
-          <p>
-            Milestones that trace the path from RAG systems and saliency work
-            toward long-term memory, talking avatars, and geometry-aware facial motion.
-          </p>
-        </div>
-        <div className="rail-controls" aria-label="Research reel controls">
-          <button type="button" onClick={() => moveRail(-1)} aria-label="Scroll research reel left">
-            <ArrowUpRight size={18} aria-hidden="true" />
-          </button>
-          <button type="button" onClick={() => moveRail(1)} aria-label="Scroll research reel right">
-            <ArrowUpRight size={18} aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-      <div className="rail-progress" aria-hidden="true">
-        <span style={{ transform: `scaleX(${Math.max(0.08, progress)})` }} />
-      </div>
-      <div className="research-rail" ref={railRef} onScroll={updateProgress} tabIndex={0}>
-        {researchJourney.map((item, index) => (
-          <article className="journey-card" key={item.title}>
-            <span className="runway-index">J{index + 1}</span>
-            <small>{item.label}</small>
-            <h3>{item.title}</h3>
-            <p>{item.detail}</p>
-            <div className="tag-row">
-              {item.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </article>
-        ))}
-        {projects.map((project, index) => (
-          <article className="journey-card project-runway-card" key={project.title}>
-            <span className="runway-index">P{index + 1}</span>
-            <small>{project.period}</small>
-            <h3>{project.title}</h3>
-            <p>{project.description}</p>
-            <div className="tag-row">
-              {project.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-            <div className="runway-actions">
-              <a
-                className="icon-link"
-                href={project.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open GitHub project: ${project.title}`}
-              >
-                <Github size={19} aria-hidden="true" />
-              </a>
-              <button type="button" className="text-link" onClick={() => onProjectClick(project)}>
-                Detail layer
-              </button>
-            </div>
-          </article>
-        ))}
+          <div className="deep-progress" aria-hidden="true">
+            <motion.span style={{ scaleX: progress }} />
+          </div>
+          <div className="deep-map" aria-label="Scroll-driven research trajectory">
+            <div className="deep-axis" aria-hidden="true" />
+            {items.map((item, index) => (
+              <ResearchDeepDiveCard
+                item={item}
+                index={index}
+                total={items.length}
+                progress={progress}
+                onProjectClick={onProjectClick}
+                key={`${item.label}-${item.title}`}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-function AvatarPipelineSection() {
+const dinaReelPanels = [
+  {
+    phase: "01 / Geometry",
+    icon: Move3D,
+    title: "3DGS / FLAME initialization",
+    detail:
+      "The geometry step frames render_stable.mp4 as the visual bridge between mesh initialization, Gaussian structure, and future audio-driven facial motion.",
+    src: "/assets/video/render-stable.mp4",
+    poster: "/assets/gallery/aerial-neural.webp",
+    tags: ["3DGS", "FLAME", "Geometry"],
+  },
+  {
+    phase: "02 / Training Variants",
+    icon: Layers3,
+    title: "From GaussianTalker experiments toward DINA",
+    detail:
+      "v7_14000.mp4 is presented as a large comparison board for high-level training and architecture variants connected to the DINA research lineage.",
+    src: "/assets/video/training-variants-v7.mp4",
+    poster: "/assets/gallery/campus-ideathon.webp",
+    tags: ["Variant comparison", "GaussianTalker", "Custom training"],
+    primary: true,
+  },
+  {
+    phase: "03 / Applied Output",
+    icon: Mic2,
+    title: "Real-time talking-avatar output",
+    detail:
+      "robert_2.mp4 anchors the applied avatar direction: speech features, streaming inference, visual articulation, and robotic-face behavior.",
+    src: "/assets/video/robert-2.mp4",
+    poster: "/assets/gallery/road-crossing-memory.webp",
+    tags: ["Audio stream", "Avatar demo", "Real-time"],
+  },
+];
+
+function DinaLabSection() {
   return (
-    <SectionReveal id="avatar" className="section avatar-section">
-      <div className="avatar-grid">
-        <div className="avatar-copy">
+    <SectionReveal id="dina" className="section dina-lab-section">
+      <div className="lab-reel-header">
+        <div>
           <div className="section-kicker">
-            <Mic2 size={18} aria-hidden="true" />
-            Speech to Face
+            <Move3D size={18} aria-hidden="true" />
+            From GaussianTalker to DINA
           </div>
-          <h2>Real-time talking avatar work, framed as an applied research pipeline.</h2>
-          <p>
-            MILab research and industry-relevant collaboration around audio-to-visual
-            lip synchronization, streaming inference, Audio2Face/Three.js integration,
-            ARKit blendshape decoding, and high-resolution mouth refinement.
-          </p>
-          <div className="pipeline-strip" aria-label="Real-time avatar pipeline">
-            {avatarPipeline.map((step, index) => (
-              <span style={{ "--pipeline-index": index } as CSSProperties} key={step}>
-                {step}
-              </span>
-            ))}
-          </div>
+          <h2>Toward stable audio-driven 3D faces.</h2>
         </div>
-        <div className="avatar-video-card">
-          <div className="waveform" aria-hidden="true">
-            {Array.from({ length: 28 }, (_, index) => (
-              <i style={{ "--wave-index": index } as CSSProperties} key={index} />
-            ))}
-          </div>
-          <video
-            src="/assets/video/robert-2.mp4"
-            muted
-            loop
-            playsInline
-            autoPlay
-            preload="metadata"
-            poster="/assets/gallery/lab-interface.webp"
-          />
-          <span>
-            <PlayCircle size={18} aria-hidden="true" />
-            real-time talking avatar demo
-          </span>
-        </div>
+        <p>
+          This section keeps ongoing work public-safe while making the research
+          lineage visible: geometry, training variants, and real-time avatar
+          behavior as one connected progression.
+        </p>
+      </div>
+
+      <div className="lab-reel" aria-label="DINA and GaussianTalker research progression">
+        {dinaReelPanels.map((panel, index) => {
+          const Icon = panel.icon;
+          return (
+            <motion.article className={`lab-panel ${panel.primary ? "primary-panel" : ""}`} key={panel.title} whileHover={{ y: -14, x: 10 }}>
+              <div className="lab-panel-media">
+                <video src={panel.src} muted loop playsInline autoPlay preload="metadata" poster={panel.poster} />
+                <div className="mesh-overlay" aria-hidden="true" />
+                <div className="variant-chips" aria-hidden="true">
+                  {panel.tags.map((tag, tagIndex) => (
+                    <span style={{ "--chip-index": tagIndex } as CSSProperties} key={tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                {panel.primary ? (
+                  <div className="variant-ruler" aria-hidden="true">
+                    {Array.from({ length: 6 }, (_, marker) => (
+                      <i key={marker}>V{marker + 1}</i>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+              <div className="lab-panel-copy">
+                <span>{panel.phase}</span>
+                <Icon size={22} aria-hidden="true" />
+                <h3>{panel.title}</h3>
+                <p>{panel.detail}</p>
+                {index === 2 ? (
+                  <div className="pipeline-strip compact" aria-label="Real-time avatar pipeline">
+                    {avatarPipeline.map((step, stepIndex) => (
+                      <span style={{ "--pipeline-index": stepIndex } as CSSProperties} key={step}>
+                        {step}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
+
+      <div className="dina-teaser">
+        <span>DINA direction</span>
+        <p>
+          Ongoing geometry-aware audio-to-face research focused on stable jaw,
+          lip, and lower-face articulation. No unreleased architecture, loss,
+          equation, or implementation detail is disclosed.
+        </p>
       </div>
     </SectionReveal>
   );
 }
 
-function DinaRenderSection() {
+function ResearchSystemsGallery() {
   return (
-    <SectionReveal id="dina" className="section dina-section">
-      <div className="dina-video-plane">
-        <video
-          src="/assets/video/render-stable.mp4"
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="metadata"
-          poster="/assets/gallery/aerial-neural.webp"
-        />
-        <div className="mesh-overlay" aria-hidden="true" />
-      </div>
-      <div className="dina-copy">
-        <div className="section-kicker">
-          <Move3D size={18} aria-hidden="true" />
-          Ongoing Research
+    <SectionReveal className="section systems-gallery-section">
+      <div className="systems-gallery-heading">
+        <div>
+          <div className="section-kicker">
+            <Sparkles size={18} aria-hidden="true" />
+            Experiment Archive
+          </div>
+          <h2>Research artifacts as an active systems gallery.</h2>
         </div>
-        <h2>Geometry-aware audio-to-face articulation.</h2>
         <p>
-          DINA is kept intentionally high level: ongoing research on stable jaw,
-          lip, and lower-face motion for FLAME-compatible talking-head systems,
-          within a broader direction in 3D Gaussian Splatting and real-time faces.
+          A dark research archive for proof-of-work visuals: videos, memory
+          systems, projects, and deployment-facing experiments with diagonal,
+          non-linear hover motion.
         </p>
-        <div className="dina-tags" aria-label="DINA public research scope">
-          <span>FLAME mesh</span>
-          <span>Lower-face motion</span>
-          <span>3DGS direction</span>
-        </div>
+      </div>
+      <div className="systems-grid">
+        {dinaReelPanels.map((panel) => (
+          <motion.article className="system-tile media-tile" key={`grid-${panel.title}`} whileHover={{ y: -13, x: 9, rotate: 0.35 }}>
+            <video src={panel.src} muted loop playsInline autoPlay preload="metadata" poster={panel.poster} />
+            <div className="system-tile-copy">
+              <small>{panel.phase}</small>
+              <h3>{panel.title}</h3>
+            </div>
+          </motion.article>
+        ))}
+        <motion.article className="system-tile memory-tile" whileHover={{ y: -13, x: 9, rotate: 0.35 }}>
+          <div className="mini-memory-graph" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <i />
+          </div>
+          <div className="system-tile-copy">
+            <small>PNEUMA</small>
+            <h3>Triadic memory resolver</h3>
+          </div>
+        </motion.article>
+        {projects.slice(0, 2).map((project) => (
+          <motion.article className="system-tile project-tile" key={`grid-${project.title}`} whileHover={{ y: -13, x: 9, rotate: 0.35 }}>
+            <div className="project-signal" aria-hidden="true" />
+            <div className="system-tile-copy">
+              <small>{project.period}</small>
+              <h3>{project.title}</h3>
+            </div>
+          </motion.article>
+        ))}
       </div>
     </SectionReveal>
   );
@@ -770,18 +874,33 @@ function App() {
           </div>
         </SectionReveal>
 
-        <ResearchJourneyRail onProjectClick={setSelectedProject} />
+        <ResearchDeepDive onProjectClick={setSelectedProject} />
 
         <SectionReveal id="experience" className="section experience-section">
-          <div className="experience-console">
-            <div className="console-media">
-              <img src="/assets/gallery/lab-interface.webp" alt="Local technical workspace texture" loading="lazy" />
-              <div className="console-overlay">
-                <PlayCircle size={24} aria-hidden="true" />
-                <span>Distributed inference console</span>
+          <div className="experience-lab">
+            <div className="experience-visual" aria-label="Speech, memory, and deployment signal board">
+              <div className="signal-board">
+                <div className="signal-header">
+                  <PlayCircle size={24} aria-hidden="true" />
+                  <span>Avatar and memory systems</span>
+                </div>
+                <div className="signal-stream" aria-hidden="true">
+                  {Array.from({ length: 22 }, (_, index) => (
+                    <i style={{ "--signal-index": index } as CSSProperties} key={index} />
+                  ))}
+                </div>
+                <div className="signal-nodes">
+                  <span>Audio2Face</span>
+                  <span>ARKit blendshapes</span>
+                  <span>3DGS</span>
+                  <span>FAISS</span>
+                  <span>Jetson</span>
+                  <span>DGX Spark</span>
+                </div>
               </div>
+              <img src="/assets/gallery/campus-ideathon.webp" alt="North South University campus during an academic ideathon" loading="lazy" />
             </div>
-            <div className="console-copy">
+            <div className="experience-copy">
               <div className="section-kicker">
                 <ShieldCheck size={18} aria-hidden="true" />
                 Research and Industry
@@ -880,6 +999,7 @@ function App() {
                 <figure
                   className={`gallery-item item-${index + 1}`}
                   style={{ "--gallery-index": index } as CSSProperties}
+                  tabIndex={0}
                   key={image.src}
                 >
                   <img src={image.src} alt={image.alt} loading="lazy" />
@@ -893,9 +1013,9 @@ function App() {
           </div>
         </SectionReveal>
 
-        <AvatarPipelineSection />
+        <DinaLabSection />
 
-        <DinaRenderSection />
+        <ResearchSystemsGallery />
 
         <SectionReveal className="section awards-section">
           <div className="award-stage">

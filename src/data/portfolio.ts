@@ -267,6 +267,24 @@ export const galleryImages: GalleryImage[] = [
     label: "Personal atmosphere",
   },
   {
+    src: "/assets/gallery/saudi-cafe-twilight.webp",
+    alt: "Saudi cafe at twilight with warm signage and evening sky",
+    title: "Twilight field",
+    label: "Ambient memory",
+  },
+  {
+    src: "/assets/gallery/campus-ideathon.webp",
+    alt: "North South University campus during an academic ideathon",
+    title: "Campus ideathon",
+    label: "Academic signal",
+  },
+  {
+    src: "/assets/gallery/road-crossing-memory.webp",
+    alt: "Night road crossing arranged as a journey motif",
+    title: "Crossing path",
+    label: "Research journey",
+  },
+  {
     src: "/assets/gallery/shoreline.webp",
     alt: "Calm shoreline at sunset",
     title: "Waveform shore",

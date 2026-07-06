@@ -16,6 +16,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 ASSET_ROOT = PUBLIC / "assets"
+SOURCE_ASSET_ROOT = ROOT / "source_assets"
 
 
 def ensure_dirs() -> None:
@@ -26,6 +27,16 @@ def ensure_dirs() -> None:
         ASSET_ROOT / "og",
     ]:
         folder.mkdir(parents=True, exist_ok=True)
+
+
+def source_asset_path(source: str) -> Path:
+    organized = SOURCE_ASSET_ROOT / source
+    if organized.exists():
+        return organized
+    root_fallback = ROOT / source
+    if root_fallback.exists():
+        return root_fallback
+    return ROOT / Path(source).name
 
 
 def crop_to_aspect(image: Image.Image, aspect: float, center: tuple[float, float]) -> Image.Image:
@@ -70,7 +81,7 @@ def make_webp(
     color: float = 0.9,
     overlay: tuple[int, int, int, int] = (6, 16, 31, 44),
 ) -> dict[str, object]:
-    src = ROOT / source
+    src = source_asset_path(source)
     dest = PUBLIC / destination
     with Image.open(src) as raw:
       image = ImageOps.exif_transpose(raw).convert("RGB")
@@ -80,7 +91,7 @@ def make_webp(
       treated.save(dest, "WEBP", quality=82, method=6)
 
     return {
-        "source": source,
+        "source": str(src.relative_to(ROOT)),
         "asset": destination,
         "size": size,
         "treatment": "cropped, dark-blue color grade, webp compression",
@@ -283,7 +294,7 @@ def generate_public_resume() -> dict[str, object]:
     )
     doc.build(story)
     return {
-        "source": "main.tex and Tanvir_s_Resume_Latest.pdf",
+        "source": "source_assets/documents/resume/main.tex and source_assets/documents/resume/Tanvir_s_Resume_Latest.pdf",
         "asset": str(dest.relative_to(PUBLIC)),
         "treatment": "generated public-safe PDF; address, phone, and private reference contacts omitted",
     }
@@ -294,12 +305,13 @@ def copy_static_assets() -> list[dict[str, object]]:
     copied.append(generate_public_resume())
 
     videos = [
-        ("humanoid_robot.mp4", "humanoid-robot.mp4"),
-        ("renders_stable.mp4", "render-stable.mp4"),
-        ("robert_2.mp4", "robert-2.mp4"),
+        ("video/humanoid_robot.mp4", "humanoid-robot.mp4"),
+        ("video/renders_stable.mp4", "render-stable.mp4"),
+        ("video/robert_2.mp4", "robert-2.mp4"),
+        ("video/v7_14000.mp4", "training-variants-v7.mp4"),
     ]
     for source_name, asset_name in videos:
-        video_src = ROOT / source_name
+        video_src = source_asset_path(source_name)
         video_dest = ASSET_ROOT / "video" / asset_name
         if not video_src.exists():
             continue
@@ -378,6 +390,36 @@ def main() -> None:
             overlay=(7, 16, 30, 62),
         ),
         make_webp(
+            "iCloud Photos/iCloud Photos/IMG_4836.JPG",
+            "assets/gallery/saudi-cafe-twilight.webp",
+            (1100, 1400),
+            center=(0.52, 0.58),
+            brightness=0.74,
+            contrast=1.16,
+            color=0.84,
+            overlay=(6, 15, 29, 70),
+        ),
+        make_webp(
+            "iCloud Photos_2/iCloud Photos/IMG_2150.JPG",
+            "assets/gallery/campus-ideathon.webp",
+            (1300, 900),
+            center=(0.52, 0.56),
+            brightness=0.76,
+            contrast=1.14,
+            color=0.82,
+            overlay=(7, 16, 30, 60),
+        ),
+        make_webp(
+            "iCloud Photos_2/iCloud Photos/IMG_4253.JPEG",
+            "assets/gallery/road-crossing-memory.webp",
+            (1300, 900),
+            center=(0.5, 0.52),
+            brightness=0.72,
+            contrast=1.18,
+            color=0.76,
+            overlay=(6, 15, 28, 66),
+        ),
+        make_webp(
             "iCloud Photos_2/iCloud Photos/IMG_1914.JPEG",
             "assets/gallery/shoreline.webp",
             (1100, 1400),
@@ -396,16 +438,6 @@ def main() -> None:
             contrast=1.16,
             color=0.82,
             overlay=(7, 16, 30, 64),
-        ),
-        make_webp(
-            "iCloud Photos_2/iCloud Photos/IMG_2707.JPG",
-            "assets/gallery/lab-interface.webp",
-            (1300, 900),
-            center=(0.5, 0.48),
-            brightness=0.74,
-            contrast=1.2,
-            color=0.82,
-            overlay=(6, 16, 31, 72),
         ),
         make_webp(
             "iCloud Photos/iCloud Photos/IMG_4831.JPG",

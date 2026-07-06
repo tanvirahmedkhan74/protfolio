@@ -8,7 +8,7 @@
   ],
   "assets": [
     {
-      "source": "iCloud Photos/iCloud Photos/IMG_4363.JPG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_4363.JPG",
       "asset": "assets/portraits/portrait-hero.webp",
       "size": [
         900,
@@ -17,7 +17,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos_2/iCloud Photos/IMG_1658.JPG",
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_1658.JPG",
       "asset": "assets/portraits/portrait-about.webp",
       "size": [
         840,
@@ -26,7 +26,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos_2/iCloud Photos/IMG_1261.JPEG",
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_1261.JPEG",
       "asset": "assets/gallery/memory-sky.webp",
       "size": [
         1600,
@@ -35,7 +35,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos_2/iCloud Photos/IMG_3026.JPEG",
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_3026.JPEG",
       "asset": "assets/gallery/forest-lake.webp",
       "size": [
         1100,
@@ -44,7 +44,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos/iCloud Photos/IMG_4561.JPG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_4561.JPG",
       "asset": "assets/gallery/aerial-neural.webp",
       "size": [
         1100,
@@ -53,7 +53,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos/iCloud Photos/IMG_4924.JPG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_4924.JPG",
       "asset": "assets/gallery/saudi-city.webp",
       "size": [
         1100,
@@ -62,7 +62,34 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos_2/iCloud Photos/IMG_1914.JPEG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_4836.JPG",
+      "asset": "assets/gallery/saudi-cafe-twilight.webp",
+      "size": [
+        1100,
+        1400
+      ],
+      "treatment": "cropped, dark-blue color grade, webp compression"
+    },
+    {
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_2150.JPG",
+      "asset": "assets/gallery/campus-ideathon.webp",
+      "size": [
+        1300,
+        900
+      ],
+      "treatment": "cropped, dark-blue color grade, webp compression"
+    },
+    {
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_4253.JPEG",
+      "asset": "assets/gallery/road-crossing-memory.webp",
+      "size": [
+        1300,
+        900
+      ],
+      "treatment": "cropped, dark-blue color grade, webp compression"
+    },
+    {
+      "source": "iCloud Photos_2\\iCloud Photos\\IMG_1914.JPEG",
       "asset": "assets/gallery/shoreline.webp",
       "size": [
         1100,
@@ -71,7 +98,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos/iCloud Photos/IMG_3795.JPG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_3795.JPG",
       "asset": "assets/gallery/campus-night.webp",
       "size": [
         1100,
@@ -80,16 +107,7 @@
       "treatment": "cropped, dark-blue color grade, webp compression"
     },
     {
-      "source": "iCloud Photos_2/iCloud Photos/IMG_2707.JPG",
-      "asset": "assets/gallery/lab-interface.webp",
-      "size": [
-        1300,
-        900
-      ],
-      "treatment": "cropped, dark-blue color grade, webp compression"
-    },
-    {
-      "source": "iCloud Photos/iCloud Photos/IMG_4831.JPG",
+      "source": "iCloud Photos\\iCloud Photos\\IMG_4831.JPG",
       "asset": "assets/gallery/saudi-night.webp",
       "size": [
         1300,
@@ -107,23 +125,28 @@
       "treatment": "local generated open graph card"
     },
     {
-      "source": "main.tex and Tanvir_s_Resume_Latest.pdf",
+      "source": "source_assets/documents/resume/main.tex and source_assets/documents/resume/Tanvir_s_Resume_Latest.pdf",
       "asset": "Tanvir_Ahmed_Khan_Resume.pdf",
       "treatment": "generated public-safe PDF; address, phone, and private reference contacts omitted"
     },
     {
-      "source": "humanoid_robot.mp4",
+      "source": "source_assets\\video\\humanoid_robot.mp4",
       "asset": "assets\\video\\humanoid-robot.mp4",
       "treatment": "copied locally without transcoding"
     },
     {
-      "source": "renders_stable.mp4",
+      "source": "source_assets\\video\\renders_stable.mp4",
       "asset": "assets\\video\\render-stable.mp4",
       "treatment": "copied locally without transcoding"
     },
     {
-      "source": "robert_2.mp4",
+      "source": "source_assets\\video\\robert_2.mp4",
       "asset": "assets\\video\\robert-2.mp4",
+      "treatment": "copied locally without transcoding"
+    },
+    {
+      "source": "source_assets\\video\\v7_14000.mp4",
+      "asset": "assets\\video\\training-variants-v7.mp4",
       "treatment": "copied locally without transcoding"
     }
   ]
