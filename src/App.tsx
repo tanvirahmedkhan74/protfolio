@@ -14,7 +14,6 @@ import {
   Move3D,
   Network,
   Orbit,
-  PauseCircle,
   PlayCircle,
   ScrollText,
   ShieldCheck,
@@ -28,7 +27,6 @@ import {
   useReducedMotion,
   useScroll,
   useSpring,
-  useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -58,6 +56,78 @@ const heroMetrics = [
   ["RAG", "memory systems"],
 ];
 
+const statementWords = [
+  "Building",
+  "intelligent",
+  "multimodal",
+  "systems",
+  "that",
+  "see,",
+  "speak,",
+  "remember,",
+  "and",
+  "reason.",
+];
+
+const highlightedStatementWords = new Set(["multimodal", "see,", "speak,", "remember,", "reason."]);
+
+const pneumaLayers = [
+  {
+    label: "SQL",
+    title: "Structured temporal memory",
+    detail: "Episodic events, timestamps, entities, and explainable state.",
+  },
+  {
+    label: "FAISS",
+    title: "Vector similarity memory",
+    detail: "Fast semantic retrieval for natural-language memory questions.",
+  },
+  {
+    label: "KG",
+    title: "Knowledge graph reasoning",
+    detail: "Linked entities, relationships, temporal trails, and context.",
+  },
+];
+
+const avatarPipeline = [
+  "Audio stream",
+  "Chunked features",
+  "Avatar inference",
+  "3D / video render",
+  "Robotic face output",
+];
+
+const researchJourney = [
+  {
+    label: "Memory",
+    title: "PNEUMA",
+    detail:
+      "Model-agnostic long-term egocentric memory using SQL, FAISS/vector retrieval, and knowledge graphs for privacy-preserving edge-first assistants.",
+    tags: ["SQL", "FAISS", "Knowledge Graphs"],
+  },
+  {
+    label: "Speech to Face",
+    title: "Real-time talking avatars",
+    detail:
+      "Applied MILab research around audio-to-visual synchronization, chunked streaming, Audio2Face, Three.js, ARKit blendshapes, and lip-region refinement.",
+    tags: ["Audio2Face", "Three.js", "Streaming"],
+  },
+  {
+    label: "3D Neural Rendering",
+    title: "Audio-driven 3D heads",
+    detail:
+      "Research direction connecting speech signals, 3D Gaussian Splatting, FLAME-style geometry, and replay-compatible talking-head motion.",
+    tags: ["3DGS", "FLAME", "Geometry"],
+  },
+  {
+    label: "Ongoing",
+    title: "DINA research teaser",
+    detail:
+      "High-level ongoing work on geometry-aware audio-to-face articulation for stable jaw, lip, and lower-face motion.",
+    tags: ["Ongoing", "FLAME", "High level"],
+  },
+];
+
 function usePointerAtmosphere() {
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -71,18 +141,17 @@ function usePointerAtmosphere() {
   }, []);
 }
 
-function useIsNarrow() {
-  const [isNarrow, setIsNarrow] = useState(false);
-
+function useHashAnchorRestore() {
   useEffect(() => {
-    const query = window.matchMedia("(max-width: 760px)");
-    const update = () => setIsNarrow(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
+    if (!window.location.hash) {
+      return;
+    }
+    const anchor = window.location.hash.slice(1);
+    const timeout = window.setTimeout(() => {
+      document.getElementById(anchor)?.scrollIntoView({ block: "start" });
+    }, 160);
+    return () => window.clearTimeout(timeout);
   }, []);
-
-  return isNarrow;
 }
 
 function ScrollProgress() {
@@ -104,8 +173,18 @@ function ScrollProgress() {
 
 function IntroCurtain() {
   const reduceMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = useState(!reduceMotion);
 
-  if (reduceMotion) {
+  useEffect(() => {
+    if (reduceMotion) {
+      setIsVisible(false);
+      return;
+    }
+    const timeout = window.setTimeout(() => setIsVisible(false), 2300);
+    return () => window.clearTimeout(timeout);
+  }, [reduceMotion]);
+
+  if (!isVisible) {
     return null;
   }
 
@@ -188,119 +267,251 @@ function ResearchOrbit() {
   );
 }
 
-function MemoryGraph() {
-  const nodes = [
-    "Speech",
-    "Avatar",
-    "3DGS",
-    "RAG",
-    "FAISS",
-    "SQL",
-    "KG",
-    "TTS",
-    "VLM",
-  ];
-
+function ResearchStatement() {
   return (
-    <div className="memory-graph" aria-label="Recursive memory system visualization">
-      <svg viewBox="0 0 620 360" role="img" aria-label="Memory graph connections">
-        <path d="M80 180 C160 70 300 70 390 174 S520 292 574 154" />
-        <path d="M88 226 C190 292 350 268 500 92" />
-        <path d="M118 102 C260 190 360 206 540 242" />
+    <SectionReveal id="statement" className="section statement-section">
+      <div className="statement-wrap">
+        <div className="section-kicker">
+          <Sparkles size={18} aria-hidden="true" />
+          Research Statement
+        </div>
+        <h2 aria-label="Building intelligent multimodal systems that see, speak, remember, and reason.">
+          {statementWords.map((word, index) => (
+            <span
+              className={highlightedStatementWords.has(word.toLowerCase()) ? "statement-highlight" : ""}
+              style={{ "--word-index": index } as CSSProperties}
+              key={word}
+            >
+              {word}
+            </span>
+          ))}
+        </h2>
+        <svg className="signature-line" viewBox="0 0 760 88" aria-hidden="true">
+          <path d="M18 58 C132 8 202 90 316 42 S494 4 562 48 686 82 742 24" />
+        </svg>
+      </div>
+    </SectionReveal>
+  );
+}
+
+function PneumaMemoryGraph() {
+  return (
+    <div className="pneuma-graph" aria-label="PNEUMA triadic memory visualization">
+      <div className="query-token">
+        <small>Query</small>
+        <strong>Where is the remembered context?</strong>
+      </div>
+      <svg viewBox="0 0 720 420" role="img" aria-label="Query paths through SQL, FAISS, and knowledge graph memory">
+        <path className="memory-path path-a" d="M74 208 C176 76 320 70 430 150 S594 230 650 112" />
+        <path className="memory-path path-b" d="M76 216 C210 276 354 268 506 238 S620 262 658 318" />
+        <path className="memory-path path-c" d="M90 242 C176 354 348 356 450 284 S574 148 664 188" />
       </svg>
-      {nodes.map((node, index) => (
-        <span
-          className="memory-node"
+      <div className="memory-pulse pulse-one" />
+      <div className="memory-pulse pulse-two" />
+      <div className="memory-pulse pulse-three" />
+      {pneumaLayers.map((layer, index) => (
+        <article
+          className={`pneuma-layer layer-${index + 1}`}
           style={{ "--memory-index": index } as CSSProperties}
-          key={node}
+          key={layer.label}
         >
-          {node}
-        </span>
+          <span>{layer.label}</span>
+          <h3>{layer.title}</h3>
+          <p>{layer.detail}</p>
+        </article>
       ))}
-      <div className="memory-card">
-        <small>Recursive retrieval</small>
-        <strong>SQL + FAISS + Knowledge Graphs</strong>
-        <p>Designed as layered memory, not a flat search box.</p>
+      <div className="memory-result">
+        <small>Resolved answer</small>
+        <strong>Temporal context + semantic match + relational trail</strong>
       </div>
     </div>
   );
 }
 
-function HorizontalRunway({ onProjectClick }: { onProjectClick: (project: Project) => void }) {
-  const runwayRef = useRef<HTMLElement>(null);
+function ResearchJourneyRail({ onProjectClick }: { onProjectClick: (project: Project) => void }) {
+  const railRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  const isNarrow = useIsNarrow();
-  const { scrollYProgress } = useScroll({
-    target: runwayRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-57%"]);
+  const [progress, setProgress] = useState(0);
+
+  const updateProgress = () => {
+    const rail = railRef.current;
+    if (!rail) {
+      return;
+    }
+    const max = rail.scrollWidth - rail.clientWidth;
+    setProgress(max <= 0 ? 0 : rail.scrollLeft / max);
+  };
+
+  useEffect(() => {
+    updateProgress();
+    window.addEventListener("resize", updateProgress);
+    return () => window.removeEventListener("resize", updateProgress);
+  }, []);
+
+  const moveRail = (direction: -1 | 1) => {
+    const rail = railRef.current;
+    if (!rail) {
+      return;
+    }
+    rail.scrollBy({
+      left: direction * Math.min(rail.clientWidth * 0.82, 620),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  };
 
   return (
-    <section className="runway-section" ref={runwayRef} id="projects">
-      <div className="runway-sticky">
-        <div className="runway-copy">
+    <section className="section rail-section" id="projects">
+      <div className="rail-heading">
+        <div>
           <div className="section-kicker">
             <Cpu size={18} aria-hidden="true" />
-            Horizontal Systems Runway
+            Research Trajectory
           </div>
-          <h2>Applied systems moving from language to vision to deployment.</h2>
+          <h2>Perception to memory to speech to 3D embodiment.</h2>
           <p>
-            Selected builds across grading intelligence, CUDA profiling,
-            emotion-aware speech systems, and deployed AI research workflows.
+            Milestones that trace the path from RAG systems and saliency work
+            toward long-term memory, talking avatars, and geometry-aware facial motion.
           </p>
         </div>
-        <motion.div className="runway-track" style={{ x: reduceMotion || isNarrow ? 0 : x }}>
-          {projects.map((project, index) => (
-            <article className="runway-card project-runway-card" key={project.title}>
-              <span className="runway-index">P{index + 1}</span>
-              <div>
-                <small>{project.period}</small>
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-              </div>
-              <div className="tag-row">
-                {project.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-              <div className="runway-actions">
-                <a
-                  className="icon-link"
-                  href={project.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`Open GitHub project: ${project.title}`}
-                >
-                  <Github size={19} aria-hidden="true" />
-                </a>
-                <button type="button" className="text-link" onClick={() => onProjectClick(project)}>
-                  Detail layer
-                </button>
-              </div>
-            </article>
-          ))}
-          {publications.map((paper, index) => (
-            <article className="runway-card paper-runway-card" key={paper.title}>
-              <span className="runway-index">R{index + 1}</span>
-              <span className={`status-pill ${paper.status === "Accepted" ? "accepted" : ""}`}>
-                {paper.status}
-              </span>
-              <h3>{paper.title}</h3>
-              <p className="paper-venue">
-                {paper.venue}, {paper.year}
-              </p>
-              {paper.note ? <p>{paper.note}</p> : null}
-              {paper.href ? (
-                <a className="text-link" href={paper.href} target="_blank" rel="noreferrer">
-                  Open paper <ArrowUpRight size={16} aria-hidden="true" />
-                </a>
-              ) : null}
-            </article>
-          ))}
-        </motion.div>
+        <div className="rail-controls" aria-label="Research reel controls">
+          <button type="button" onClick={() => moveRail(-1)} aria-label="Scroll research reel left">
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </button>
+          <button type="button" onClick={() => moveRail(1)} aria-label="Scroll research reel right">
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+      <div className="rail-progress" aria-hidden="true">
+        <span style={{ transform: `scaleX(${Math.max(0.08, progress)})` }} />
+      </div>
+      <div className="research-rail" ref={railRef} onScroll={updateProgress} tabIndex={0}>
+        {researchJourney.map((item, index) => (
+          <article className="journey-card" key={item.title}>
+            <span className="runway-index">J{index + 1}</span>
+            <small>{item.label}</small>
+            <h3>{item.title}</h3>
+            <p>{item.detail}</p>
+            <div className="tag-row">
+              {item.tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+        {projects.map((project, index) => (
+          <article className="journey-card project-runway-card" key={project.title}>
+            <span className="runway-index">P{index + 1}</span>
+            <small>{project.period}</small>
+            <h3>{project.title}</h3>
+            <p>{project.description}</p>
+            <div className="tag-row">
+              {project.tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+            <div className="runway-actions">
+              <a
+                className="icon-link"
+                href={project.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Open GitHub project: ${project.title}`}
+              >
+                <Github size={19} aria-hidden="true" />
+              </a>
+              <button type="button" className="text-link" onClick={() => onProjectClick(project)}>
+                Detail layer
+              </button>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
+  );
+}
+
+function AvatarPipelineSection() {
+  return (
+    <SectionReveal id="avatar" className="section avatar-section">
+      <div className="avatar-grid">
+        <div className="avatar-copy">
+          <div className="section-kicker">
+            <Mic2 size={18} aria-hidden="true" />
+            Speech to Face
+          </div>
+          <h2>Real-time talking avatar work, framed as an applied research pipeline.</h2>
+          <p>
+            MILab research and industry-relevant collaboration around audio-to-visual
+            lip synchronization, streaming inference, Audio2Face/Three.js integration,
+            ARKit blendshape decoding, and high-resolution mouth refinement.
+          </p>
+          <div className="pipeline-strip" aria-label="Real-time avatar pipeline">
+            {avatarPipeline.map((step, index) => (
+              <span style={{ "--pipeline-index": index } as CSSProperties} key={step}>
+                {step}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="avatar-video-card">
+          <div className="waveform" aria-hidden="true">
+            {Array.from({ length: 28 }, (_, index) => (
+              <i style={{ "--wave-index": index } as CSSProperties} key={index} />
+            ))}
+          </div>
+          <video
+            src="/assets/video/robert-2.mp4"
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+            poster="/assets/gallery/lab-interface.webp"
+          />
+          <span>
+            <PlayCircle size={18} aria-hidden="true" />
+            real-time talking avatar demo
+          </span>
+        </div>
+      </div>
+    </SectionReveal>
+  );
+}
+
+function DinaRenderSection() {
+  return (
+    <SectionReveal id="dina" className="section dina-section">
+      <div className="dina-video-plane">
+        <video
+          src="/assets/video/render-stable.mp4"
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="metadata"
+          poster="/assets/gallery/aerial-neural.webp"
+        />
+        <div className="mesh-overlay" aria-hidden="true" />
+      </div>
+      <div className="dina-copy">
+        <div className="section-kicker">
+          <Move3D size={18} aria-hidden="true" />
+          Ongoing Research
+        </div>
+        <h2>Geometry-aware audio-to-face articulation.</h2>
+        <p>
+          DINA is kept intentionally high level: ongoing research on stable jaw,
+          lip, and lower-face motion for FLAME-compatible talking-head systems,
+          within a broader direction in 3D Gaussian Splatting and real-time faces.
+        </p>
+        <div className="dina-tags" aria-label="DINA public research scope">
+          <span>FLAME mesh</span>
+          <span>Lower-face motion</span>
+          <span>3DGS direction</span>
+        </div>
+      </div>
+    </SectionReveal>
   );
 }
 
@@ -355,6 +566,7 @@ function ProjectModal({
 function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   usePointerAtmosphere();
+  useHashAnchorRestore();
 
   return (
     <div className="site-shell">
@@ -500,21 +712,23 @@ function App() {
           <ResearchOrbit />
         </SectionReveal>
 
-        <SectionReveal className="section memory-section">
+        <ResearchStatement />
+
+        <SectionReveal id="pneuma" className="section memory-section">
           <div className="memory-layout">
             <div>
               <div className="section-kicker">
                 <Layers3 size={18} aria-hidden="true" />
-                Recursive Memory
+                PNEUMA Memory
               </div>
-              <h2>Not a list of skills. A layered retrieval architecture.</h2>
+              <h2>Triadic memory for perception that can retrieve, relate, and explain.</h2>
               <p>
-                The portfolio now visualizes the resume's RAG, FAISS, SQL, and
-                knowledge-graph work as a recursive system. The diagram is original
-                CSS/SVG, inspired by neural graphs and research notebooks.
+                PNEUMA is represented as a model-agnostic, edge-first long-term
+                memory architecture: structured temporal records, vector similarity,
+                and graph reasoning resolving into one answer path.
               </p>
             </div>
-            <MemoryGraph />
+            <PneumaMemoryGraph />
           </div>
         </SectionReveal>
 
@@ -556,7 +770,7 @@ function App() {
           </div>
         </SectionReveal>
 
-        <HorizontalRunway onProjectClick={setSelectedProject} />
+        <ResearchJourneyRail onProjectClick={setSelectedProject} />
 
         <SectionReveal id="experience" className="section experience-section">
           <div className="experience-console">
@@ -679,37 +893,9 @@ function App() {
           </div>
         </SectionReveal>
 
-        <SectionReveal className="section media-section">
-          <div className="video-panel">
-            <div className="video-copy">
-              <div className="section-kicker">
-                <Move3D size={18} aria-hidden="true" />
-                Video Showcase
-              </div>
-              <h2>Robotics and avatar media in motion.</h2>
-              <p>
-                A short study loop connects the visual system back to embodied
-                AI, 3D perception, and speech-driven avatar research.
-              </p>
-            </div>
-            <div className="video-mask">
-              <video
-                className="showcase-video"
-                src="/assets/video/humanoid-robot.mp4"
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="metadata"
-                poster="/assets/gallery/forest-lake.webp"
-              />
-              <span>
-                <PauseCircle size={18} aria-hidden="true" />
-                muted study loop
-              </span>
-            </div>
-          </div>
-        </SectionReveal>
+        <AvatarPipelineSection />
+
+        <DinaRenderSection />
 
         <SectionReveal className="section awards-section">
           <div className="award-stage">

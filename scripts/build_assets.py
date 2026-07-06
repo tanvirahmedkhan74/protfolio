@@ -293,16 +293,24 @@ def copy_static_assets() -> list[dict[str, object]]:
     copied: list[dict[str, object]] = []
     copied.append(generate_public_resume())
 
-    video_src = ROOT / "humanoid_robot.mp4"
-    video_dest = ASSET_ROOT / "video" / "humanoid-robot.mp4"
-    shutil.copy2(video_src, video_dest)
-    copied.append(
-        {
-            "source": str(video_src.relative_to(ROOT)),
-            "asset": str(video_dest.relative_to(PUBLIC)),
-            "treatment": "copied locally without transcoding",
-        }
-    )
+    videos = [
+        ("humanoid_robot.mp4", "humanoid-robot.mp4"),
+        ("renders_stable.mp4", "render-stable.mp4"),
+        ("robert_2.mp4", "robert-2.mp4"),
+    ]
+    for source_name, asset_name in videos:
+        video_src = ROOT / source_name
+        video_dest = ASSET_ROOT / "video" / asset_name
+        if not video_src.exists():
+            continue
+        shutil.copy2(video_src, video_dest)
+        copied.append(
+            {
+                "source": str(video_src.relative_to(ROOT)),
+                "asset": str(video_dest.relative_to(PUBLIC)),
+                "treatment": "copied locally without transcoding",
+            }
+        )
     return copied
 
 

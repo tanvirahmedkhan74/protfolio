@@ -115,6 +115,16 @@
       "source": "humanoid_robot.mp4",
       "asset": "assets\\video\\humanoid-robot.mp4",
       "treatment": "copied locally without transcoding"
+    },
+    {
+      "source": "renders_stable.mp4",
+      "asset": "assets\\video\\render-stable.mp4",
+      "treatment": "copied locally without transcoding"
+    },
+    {
+      "source": "robert_2.mp4",
+      "asset": "assets\\video\\robert-2.mp4",
+      "treatment": "copied locally without transcoding"
     }
   ]
 }
