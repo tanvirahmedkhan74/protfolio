@@ -98,6 +98,36 @@ const avatarPipeline = [
   "Robotic face output",
 ];
 
+const gaussianFieldPoints = Array.from({ length: 42 }, (_, index) => ({
+  x: `${8 + ((index * 17) % 84)}%`,
+  y: `${6 + ((index * 29) % 86)}%`,
+  z: `${-190 + ((index * 47) % 360)}px`,
+  scale: `${0.58 + ((index % 7) * 0.08)}`,
+  delay: `${index * -0.11}s`,
+}));
+
+const academicVocabulary = [
+  { term: "Deep Learning", detail: "PyTorch, transformers, diffusion, GANs, VAEs" },
+  { term: "3DGS", detail: "Gaussian rendering and audio-driven head research" },
+  { term: "FLAME", detail: "Public geometry vocabulary only" },
+  { term: "Vision-Language", detail: "VLMs, CLIP, world models" },
+  { term: "Memory", detail: "SQL, FAISS, knowledge graphs, RAG" },
+  { term: "Audio", detail: "TTS, spectrograms, Audio2Face" },
+  { term: "Systems", detail: "FastAPI, Docker, Linux, GCP" },
+  { term: "Parallel", detail: "CUDA, OpenMP, multi-GPU inference" },
+];
+
+const deploymentPractice = [
+  "Containerized agents",
+  "Jetson Nano",
+  "DGX Spark",
+  "GCP infrastructure",
+  "FastAPI services",
+  "Linux tooling",
+  "CUDA profiling",
+  "Production ERP",
+];
+
 const researchJourney = [
   {
     label: "Memory",
@@ -494,73 +524,208 @@ const dinaReelPanels = [
 ];
 
 function DinaLabSection() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: stageRef,
+    offset: ["start end", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-90, 90]);
+  const bgScale = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [1, 1, 1] : [1.08, 1.18, 1.1]);
+  const meshX = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-80, 76]);
+  const meshRotate = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-5, 6]);
+  const copyX = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [-36, 0, 26]);
+  const boardX = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [58, 0, -34]);
+  const boardY = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [26, -10, 18]);
+  const boardRotate = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [-4, 0, 3]);
+
   return (
     <SectionReveal id="dina" className="section dina-lab-section">
-      <div className="lab-reel-header">
-        <div>
+      <div className="dina-stage" ref={stageRef}>
+        <motion.video
+          className="dina-stage-bg"
+          style={{ y: bgY, scale: bgScale }}
+          src="/assets/video/render-stable.mp4"
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="auto"
+          aria-hidden="true"
+        />
+        <motion.div className="dina-stage-mesh" style={{ x: meshX, rotate: meshRotate }} aria-hidden="true" />
+        <motion.svg
+          className="dina-flame-wire"
+          viewBox="0 0 920 680"
+          style={{ x: meshX, rotate: meshRotate }}
+          aria-hidden="true"
+        >
+          <path d="M122 522 C236 214 344 118 498 122 C666 128 766 238 814 540" />
+          <path d="M244 318 C342 258 526 252 646 324" />
+          <path d="M318 436 C406 472 522 474 612 438" />
+          <path d="M454 122 L386 342 L464 410 L546 342 Z" />
+          <path d="M248 318 L386 342 L318 436 L198 514" />
+          <path d="M646 324 L546 342 L612 438 L760 520" />
+          {Array.from({ length: 20 }, (_, index) => (
+            <circle
+              cx={150 + ((index * 83) % 660)}
+              cy={136 + ((index * 61) % 420)}
+              r={index % 4 === 0 ? 4 : 2.4}
+              key={index}
+            />
+          ))}
+        </motion.svg>
+        <div className="dina-gaussian-field" aria-hidden="true">
+          {gaussianFieldPoints.map((point, index) => (
+            <i
+              style={
+                {
+                  "--gx": point.x,
+                  "--gy": point.y,
+                  "--gz": point.z,
+                  "--gs": point.scale,
+                  "--gd": point.delay,
+                } as CSSProperties
+              }
+              key={`${point.x}-${point.y}-${index}`}
+            />
+          ))}
+        </div>
+        <div className="dina-camera-rail" aria-hidden="true">
+          <span>FLAME topology</span>
+          <span>Gaussian field</span>
+          <span>Audio-driven face</span>
+        </div>
+        <motion.div className="dina-stage-copy" style={{ x: copyX }}>
           <div className="section-kicker">
             <Move3D size={18} aria-hidden="true" />
             From GaussianTalker to DINA
           </div>
-          <h2>Toward stable audio-driven 3D faces.</h2>
+          <h2 aria-label="From GaussianTalker to DINA toward stable audio-driven 3D faces">
+            <span>From</span>
+            <strong>Gaussian<wbr />Talker</strong>
+            <span>to</span>
+            <strong>DINA</strong>
+          </h2>
+          <p className="dina-subtitle">Toward stable audio-driven 3D faces.</p>
+          <p>
+            Ongoing geometry-aware audio-to-face articulation research, framed
+            publicly through geometry, comparison runs, and real-time talking-face
+            direction without exposing private architecture or training internals.
+          </p>
+        </motion.div>
+
+        <motion.article
+          className="comparison-board"
+          style={{ x: boardX, y: boardY, rotateY: boardRotate }}
+          whileHover={{ y: -18, x: 12, rotate: 0.25 }}
+          tabIndex={0}
+        >
+          <div className="comparison-meta">
+            <span>Experiment table</span>
+            <strong>GaussianTalker lineage comparison</strong>
+          </div>
+          <div className="comparison-media">
+            <video
+              src="/assets/video/training-variants-v7.mp4"
+              muted
+              loop
+              playsInline
+              autoPlay
+              preload="auto"
+            />
+            <div className="variant-ruler cinematic" aria-hidden="true">
+              {Array.from({ length: 6 }, (_, marker) => (
+                <i key={marker}>V{marker + 1}</i>
+              ))}
+            </div>
+          </div>
+          <div className="comparison-chips" aria-label="GaussianTalker comparison metadata">
+            {["variant comparison", "training run", "facial motion", "GaussianTalker lineage"].map((tag, tagIndex) => (
+              <span style={{ "--chip-index": tagIndex } as CSSProperties} key={tag}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </motion.article>
+
+        <div className="dina-teaser">
+          <span>DINA direction</span>
+          <p>
+            Public-safe teaser only: stable jaw, lip, and lower-face articulation
+            for geometry-aware talking faces.
+          </p>
+        </div>
+      </div>
+    </SectionReveal>
+  );
+}
+
+const robotMediaPanels = [
+  {
+    phase: "Robot context",
+    title: "Humanoid robotic face work",
+    detail: "MILab / Robotbulls applied systems context for robotic-face presentation and avatar embodiment.",
+    src: "/assets/video/humanoid-robot.mp4",
+    poster: "/assets/gallery/campus-ideathon.webp",
+    tags: ["Humanoid robot", "Applied systems", "Embodiment"],
+  },
+  {
+    phase: "Avatar output",
+    title: "Talking-face output demo",
+    detail: "Speech-driven avatar output, streaming chunks, visual articulation, and robotic-face behavior.",
+    src: "/assets/video/robert-2.mp4",
+    poster: "/assets/gallery/road-crossing-memory.webp",
+    tags: ["Speech", "Avatar inference", "Real-time"],
+  },
+];
+
+function RobotbullsMilabSection() {
+  return (
+    <SectionReveal id="avatar" className="section robotbulls-section">
+      <div className="robotbulls-header">
+        <div>
+          <div className="section-kicker">
+            <Mic2 size={18} aria-hidden="true" />
+            Robotbulls x MILab Applied Systems
+          </div>
+          <h2>Audio streams, avatar inference, and robotic-face output.</h2>
         </div>
         <p>
-          This section keeps ongoing work public-safe while making the research
-          lineage visible: geometry, training variants, and real-time avatar
-          behavior as one connected progression.
+          A public-facing applied research view: no partner-sensitive deployment
+          details, just the visible pipeline from speech to embodied face.
         </p>
       </div>
-
-      <div className="lab-reel" aria-label="DINA and GaussianTalker research progression">
-        {dinaReelPanels.map((panel, index) => {
-          const Icon = panel.icon;
-          return (
-            <motion.article className={`lab-panel ${panel.primary ? "primary-panel" : ""}`} key={panel.title} whileHover={{ y: -14, x: 10 }}>
-              <div className="lab-panel-media">
-                <video src={panel.src} muted loop playsInline autoPlay preload="metadata" poster={panel.poster} />
-                <div className="mesh-overlay" aria-hidden="true" />
-                <div className="variant-chips" aria-hidden="true">
-                  {panel.tags.map((tag, tagIndex) => (
-                    <span style={{ "--chip-index": tagIndex } as CSSProperties} key={tag}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                {panel.primary ? (
-                  <div className="variant-ruler" aria-hidden="true">
-                    {Array.from({ length: 6 }, (_, marker) => (
-                      <i key={marker}>V{marker + 1}</i>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-              <div className="lab-panel-copy">
-                <span>{panel.phase}</span>
-                <Icon size={22} aria-hidden="true" />
-                <h3>{panel.title}</h3>
-                <p>{panel.detail}</p>
-                {index === 2 ? (
-                  <div className="pipeline-strip compact" aria-label="Real-time avatar pipeline">
-                    {avatarPipeline.map((step, stepIndex) => (
-                      <span style={{ "--pipeline-index": stepIndex } as CSSProperties} key={step}>
-                        {step}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </motion.article>
-          );
-        })}
+      <div className="robot-pipeline" aria-label="Robotbulls and MILab avatar pipeline">
+        {["Audio", "Streaming chunks", "Avatar inference", "Robotic face"].map((step, index) => (
+          <span style={{ "--pipeline-index": index } as CSSProperties} key={step}>
+            {step}
+          </span>
+        ))}
       </div>
-
-      <div className="dina-teaser">
-        <span>DINA direction</span>
-        <p>
-          Ongoing geometry-aware audio-to-face research focused on stable jaw,
-          lip, and lower-face articulation. No unreleased architecture, loss,
-          equation, or implementation detail is disclosed.
-        </p>
+      <div className="robot-media-grid">
+        {robotMediaPanels.map((panel, index) => (
+          <motion.article className={`robot-media-panel panel-${index + 1}`} key={panel.title} whileHover={{ y: -16, x: index === 0 ? -8 : 8 }}>
+            <div className="robot-media">
+              <video src={panel.src} muted loop playsInline autoPlay preload="metadata" poster={panel.poster} />
+              <div className="robot-waveform" aria-hidden="true">
+                {Array.from({ length: 24 }, (_, waveIndex) => (
+                  <i style={{ "--wave-index": waveIndex } as CSSProperties} key={waveIndex} />
+                ))}
+              </div>
+            </div>
+            <div className="robot-media-copy">
+              <span>{panel.phase}</span>
+              <h3>{panel.title}</h3>
+              <p>{panel.detail}</p>
+              <div className="tag-row">
+                {panel.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          </motion.article>
+        ))}
       </div>
     </SectionReveal>
   );
@@ -584,7 +749,7 @@ function ResearchSystemsGallery() {
         </p>
       </div>
       <div className="systems-grid">
-        {dinaReelPanels.map((panel) => (
+        {[...dinaReelPanels, robotMediaPanels[0]].map((panel) => (
           <motion.article className="system-tile media-tile" key={`grid-${panel.title}`} whileHover={{ y: -13, x: 9, rotate: 0.35 }}>
             <video src={panel.src} muted loop playsInline autoPlay preload="metadata" poster={panel.poster} />
             <div className="system-tile-copy">
@@ -938,45 +1103,84 @@ function App() {
           </div>
         </SectionReveal>
 
-        <SectionReveal className="section skills-section">
-          <div className="section-heading">
-            <div>
+        <SectionReveal className="section education-section">
+          <div className="education-story">
+            <div className="road-crossing-panel">
+              <img src="/assets/gallery/road-crossing-memory.webp" alt="Night road crossing used as a research journey metaphor" loading="lazy" />
+              <div>
+                <span>Journey note</span>
+                <h2>Crossed a few roads before finding the research lane.</h2>
+                <p>
+                  Education, with a little Abbey Road energy: the route into
+                  computer vision, speech systems, and Gaussian splats started
+                  with campus corridors and a lot of late-night debugging.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="academic-stage">
+            <img src="/assets/gallery/campus-ideathon.webp" alt="North South University campus during an ideathon" loading="lazy" />
+            <div className="academic-stage-copy">
               <div className="section-kicker">
                 <GraduationCap size={18} aria-hidden="true" />
                 Education and Skills
               </div>
-              <h2>Academic foundation, technical vocabulary, and deployment practice.</h2>
+              <h2>Academic Foundation</h2>
+              <p>
+                Technical vocabulary and deployment practice branch from the same
+                campus foundation: coursework, lab research, production systems,
+                and the tools needed to move models into real interfaces.
+              </p>
             </div>
-          </div>
-          <div className="education-ribbon">
-            {education.map((item) => (
-              <article className="education-card" key={item.institution}>
-                <span>{item.period}</span>
-                <h3>{item.institution}</h3>
-                <p>{item.degree}</p>
-                <ul>
-                  {item.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-          <div className="skill-constellation">
-            {skillGroups.map((group, index) => (
-              <article
-                className="skill-group"
-                style={{ "--skill-index": index } as CSSProperties}
-                key={group.title}
-              >
-                <h3>{group.title}</h3>
-                <div>
-                  {group.items.map((item) => (
-                    <span key={item}>{item}</span>
+            <div className="academic-flow" aria-label="Academic, technical vocabulary, and deployment practice">
+              <motion.article className="academic-zone foundation-zone" whileHover={{ y: -14, x: -8, rotate: -0.35 }} tabIndex={0}>
+                <span>01 / Academic Foundation</span>
+                <div className="foundation-stack">
+                  {education.map((item) => (
+                    <div className="foundation-entry" key={item.institution}>
+                      <small>{item.period}</small>
+                      <h3>{item.institution}</h3>
+                      <p>{item.degree}</p>
+                      <ul>
+                        {item.details.map((detail) => (
+                          <li key={detail}>{detail}</li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
                 </div>
-              </article>
-            ))}
+              </motion.article>
+
+              <motion.article className="academic-zone vocabulary-zone" whileHover={{ y: -18, x: 10, rotate: 0.45 }} tabIndex={0}>
+                <span>02 / Technical Vocabulary</span>
+                <h3>Research terms become working materials.</h3>
+                <div className="vocabulary-cloud">
+                  {academicVocabulary.map((item, index) => (
+                    <span
+                      className="vocab-chip"
+                      data-detail={item.detail}
+                      style={{ "--vocab-index": index } as CSSProperties}
+                      tabIndex={0}
+                      key={item.term}
+                    >
+                      {item.term}
+                    </span>
+                  ))}
+                </div>
+              </motion.article>
+
+              <motion.article className="academic-zone deployment-zone" whileHover={{ y: -12, x: 14, rotate: 0.25 }} tabIndex={0}>
+                <span>03 / Deployment Practice</span>
+                <h3>Clean engineering path from prototype to runtime.</h3>
+                <div className="deployment-console" aria-label="Deployment practice labels">
+                  {deploymentPractice.map((item, index) => (
+                    <i style={{ "--deploy-index": index } as CSSProperties} key={item}>
+                      {item}
+                    </i>
+                  ))}
+                </div>
+              </motion.article>
+            </div>
           </div>
         </SectionReveal>
 
@@ -1014,6 +1218,8 @@ function App() {
         </SectionReveal>
 
         <DinaLabSection />
+
+        <RobotbullsMilabSection />
 
         <ResearchSystemsGallery />
 
